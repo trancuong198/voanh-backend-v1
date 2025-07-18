@@ -6,11 +6,17 @@ const { Client } = require("@notionhq/client");
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Khởi tạo Notion client với token từ biến môi trường
+// Khởi tạo client Notion
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
 app.use(bodyParser.json());
 
+// ✅ Route test GET để kiểm tra backend hoạt động
+app.get("/api/log", (req, res) => {
+  res.send("✅ Backend Vô Ảnh đang hoạt động ổn định!");
+});
+
+// 📌 Route chính để ghi log vào Notion
 app.post("/log", async (req, res) => {
   const { message } = req.body;
 
@@ -39,6 +45,7 @@ app.post("/log", async (req, res) => {
   }
 });
 
+// 🔌 Khởi chạy server
 app.listen(port, () => {
-  console.log(`✅ Server is running on http://localhost:${port}`);
+  console.log(`🚀 Server is running on http://localhost:${port}`);
 });
