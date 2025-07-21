@@ -8,31 +8,34 @@ const app = express();
 app.use(bodyParser.json());
 
 // Khởi tạo Notion client
-const notion = new Client({ auth: process.env.NOTION_API_KEY });
+const notion = new Client({ auth: process.env.KHOA_API_NOTION });
 const databaseId = process.env.NOTION_DATABASE_ID;
 
-// Route POST /log
+// Tuyến đường POST /log
 app.post('/log', async (req, res) => {
   const { message } = req.body;
-  if (!message) return res.status(400).json({ error: 'Thiếu message' });
+  if (!message) {
+    return res.status(400).json({ lỗi: 'Thiếu tin nhắn' });
+  }
 
   try {
     await notion.pages.create({
       parent: { database_id: databaseId },
       properties: {
-        Name: {
+        Tên: {
           title: [{ text: { content: message } }]
         }
       }
     });
-    res.status(200).json({ status: 'Ghi Notion thành công' });
+
+    res.status(200).json({ trạng_thái: 'Ghi Notion thành công' });
   } catch (err) {
     console.error('Lỗi Notion:', err);
-    res.status(500).json({ error: 'Ghi Notion thất bại' });
+    res.status(500).json({ lỗi: 'Ghi Notion thất bại' });
   }
 });
 
-// Khởi động server
+// Khởi động máy chủ
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
   console.log(`Server chạy cổng ${PORT}`);
