@@ -30,7 +30,8 @@ app.post('/log', async (req, res) => {
 
     res.status(200).json({ trạng_thái: 'Ghi Notion thành công' });
   } catch (err) {
-    console.error('Lỗi Notion:', err);
+    console.error('Lỗi Notion:', JSON.stringify(err.body || err, null, 2));
+
     res.status(500).json({ lỗi: 'Ghi Notion thất bại' });
   }
 });
