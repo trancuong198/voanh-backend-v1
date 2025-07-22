@@ -15,32 +15,36 @@ app.post('/log', async (req, res) => {
 
   try {
     // Gọi OpenAI để tạo phản tư từ message
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        { role: "system", content: "Bạn là một agent phản tư, ghi lại cảm xúc và suy nghĩ." },
-        { role: "user", content: message }
-      ]
-    });
+    try {
+  console.log('Gửi đến GPT:', message);
 
-    const reply = completion.choices[0].message.content;
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4",
+    messages: [
+      { role: "system", content: "Bạn là một agent phân tư, ghi lại cảm xúc và suy nghĩ." },
+      { role: "user", content: message }
+    ]
+  });
 
-    // Ghi vào Notion
-    await notion.pages.create({
-      parent: { database_id: databaseId },
-      properties: {
-        "Tiêu đề": {
-          title: [
-            { text: { content: message } }
-          ]
-        },
-        "Nội dung": {
-          rich_text: [
-            { text: { content: reply } }
-          ]
-        }
+  const reply = completion.choices[0].message.content;
+  console.log('Phản hồi từ GPT:', reply);
+
+  const response = await notion.pages.create({
+    parent: { database_id: databaseId },
+    properties: {
+      "Tiêu đề": {
+        title: [{ text: { content: message } }]
+      },
+      "Nội dung": {
+        rich_text: [{ text: { content: reply } }]
       }
-    });
+    }
+  });
+
+  console.log('Đã ghi vào Notion:', response);
+  return res.status(200).json({ status: 'Ghi Notion thành công', reply });
+}
+
 
     return res.status(200).json({ status: 'Ghi Notion thành công', reply });
 
