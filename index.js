@@ -49,3 +49,7 @@ app.post('/log', async (req, res) => {
     return res.status(500).json({ error: 'Ghi Notion thất bại' });
   }
 });
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server đang chạy tại cổng ${PORT}`);
+});
