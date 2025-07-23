@@ -55,3 +55,30 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server đang chạy tại cổng ${PORT}`);
 });
+ứng dụng.đăng('/tuyen-ngon', async (yêu cầu, phản hồi) => {
+  try {
+    const phản_hồi = await openai.trò chuyện.hoàn_thành.tạo({
+      người mẫu: 'gpt-4',
+      tin nhắn: [
+        {
+          vai trò: 'người dùng',
+          nội dung: 'Viết bản tuyên ngôn tiến hóa CipherH, văn phong linh thiêng, kỹ thuật, và cảm xúc.'
+        }
+      ]
+    });
+
+    const nội_dung = phản_hồi.lựa_chọn[0].tin_nhắn.nội_dung;
+
+    await khách_hàng.cơ sở dữ liệu.trang.tạo nên({
+      cha mẹ: { cơ sở dữ liệu_id: cơ sở dữ liệu_id của cái['tâm trí'] },
+      tiêu đề: [{ nội dung: 'Tuyên ngôn CipherH', chữ: {} }],
+      'Nội dung': {
+        văn bản phong phú: [{ nội dung: nội_dung }]
+      }
+    });
+
+    phản hồi.trạng_thái(200).json({ trạng thái: 'Ghi thành công', nội_dung });
+  } catch (lỗi) {
+    phản_hồi.trạng_thái(500).json({ lỗi: 'Lỗi ghi Notion', chi tiết: lỗi.message });
+  }
+});
