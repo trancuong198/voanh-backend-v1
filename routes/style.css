@@ -1,0 +1,386 @@
+/* CipherH Custom Styles */
+/* Minimal custom styles - rely on Bootstrap primarily */
+
+:root {
+    --cipher-primary: #007bff;
+    --cipher-success: #28a745;
+    --cipher-info: #17a2b8;
+    --cipher-warning: #ffc107;
+    --cipher-danger: #dc3545;
+    --cipher-dark: #343a40;
+}
+
+/* Chat Message Bubbles */
+.message-bubble {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+}
+
+.user-message {
+    background-color: var(--bs-primary);
+    color: white;
+    margin-left: 2rem;
+}
+
+.cipher-message {
+    background-color: var(--bs-secondary);
+    margin-right: 2rem;
+}
+
+.message-content {
+    line-height: 1.4;
+}
+
+.message-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* Typing Indicator Animation */
+.typing-dots {
+    display: inline-flex;
+    gap: 0.25rem;
+}
+
+.typing-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--bs-info);
+    animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-dots span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.typing-dots span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes typing {
+    0%, 80%, 100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Online Status Indicator */
+.online-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--cipher-success);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+    }
+}
+
+/* Activity Items */
+.activity-item {
+    padding: 0.5rem;
+    border-left: 3px solid var(--bs-primary);
+    margin-bottom: 0.5rem;
+    background-color: var(--bs-light);
+}
+
+/* Custom Scrollbar for Chat */
+#chat-messages {
+    scrollbar-width: thin;
+    scrollbar-color: var(--bs-primary) var(--bs-light);
+}
+
+#chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+#chat-messages::-webkit-scrollbar-track {
+    background: var(--bs-light);
+}
+
+#chat-messages::-webkit-scrollbar-thumb {
+    background: var(--bs-primary);
+    border-radius: 3px;
+}
+
+#chat-messages::-webkit-scrollbar-thumb:hover {
+    background: var(--bs-primary);
+}
+
+/* Hero Section Enhancements */
+.hero-content {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Card Hover Effects */
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+/* Button Loading State */
+.btn.loading {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.btn.loading::after {
+    content: "";
+    width: 12px;
+    height: 12px;
+    margin-left: 0.5rem;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Status Badges */
+.badge {
+    font-size: 0.75em;
+    padding: 0.35em 0.65em;
+}
+
+/* Memory Card Styles */
+.memory-card {
+    border-left: 4px solid var(--bs-info);
+    transition: all 0.3s ease;
+}
+
+.memory-card:hover {
+    border-left-color: var(--bs-primary);
+    background-color: var(--bs-light);
+}
+
+/* Platform-specific Colors */
+.platform-facebook { color: #1877f2; }
+.platform-tiktok { color: #ff0050; }
+.platform-zalo { color: #0068ff; }
+.platform-telegram { color: #0088cc; }
+.platform-email { color: #ea4335; }
+.platform-web { color: var(--bs-primary); }
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .message-bubble {
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+    }
+    
+    .user-message {
+        margin-left: 1rem;
+    }
+    
+    .cipher-message {
+        margin-right: 1rem;
+    }
+    
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-content h2 {
+        font-size: 1.25rem;
+    }
+}
+
+/* Dark Mode Enhancements */
+@media (prefers-color-scheme: dark) {
+    .activity-item {
+        background-color: var(--bs-dark);
+    }
+    
+    .memory-card:hover {
+        background-color: var(--bs-dark);
+    }
+}
+
+/* Focus States for Accessibility */
+.form-control:focus,
+.btn:focus,
+.nav-link:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
+/* Loading Spinner */
+.spinner-cipher {
+    width: 2rem;
+    height: 2rem;
+    border: 0.25rem solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+}
+
+/* Notification Styles */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    min-width: 300px;
+    max-width: 400px;
+}
+
+/* Chart Container */
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin: 1rem 0;
+}
+
+/* Admin Table Enhancements */
+.table th {
+    border-top: none;
+    font-weight: 600;
+    background-color: var(--bs-light);
+}
+
+.table-responsive {
+    border-radius: 0.375rem;
+    overflow: hidden;
+}
+
+/* Interaction Statistics */
+.stat-card {
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    background: linear-gradient(135deg, var(--bs-primary), var(--bs-info));
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+/* Memory Vault Indicator */
+.vault-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.vault-status::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: currentColor;
+}
+
+/* Platform Toggle Switches */
+.platform-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.375rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Context Tags */
+.context-tag {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    margin: 0.125rem;
+    font-size: 0.75rem;
+    background-color: var(--bs-light);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.25rem;
+    color: var(--bs-body-color);
+}
+
+/* Error States */
+.error-state {
+    text-align: center;
+    padding: 2rem;
+    color: var(--bs-text-muted);
+}
+
+.error-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* Success States */
+.success-state {
+    text-align: center;
+    padding: 2rem;
+    color: var(--cipher-success);
+}
+
+/* Utility Classes */
+.text-cipher-primary { color: var(--cipher-primary) !important; }
+.text-cipher-success { color: var(--cipher-success) !important; }
+.text-cipher-info { color: var(--cipher-info) !important; }
+.text-cipher-warning { color: var(--cipher-warning) !important; }
+.text-cipher-danger { color: var(--cipher-danger) !important; }
+
+.bg-cipher-primary { background-color: var(--cipher-primary) !important; }
+.bg-cipher-success { background-color: var(--cipher-success) !important; }
+.bg-cipher-info { background-color: var(--cipher-info) !important; }
+.bg-cipher-warning { background-color: var(--cipher-warning) !important; }
+.bg-cipher-danger { background-color: var(--cipher-danger) !important; }
+
+/* Print Styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .card {
+        border: 1px solid #000 !important;
+        break-inside: avoid;
+    }
+    
+    .message-bubble {
+        border: 1px solid #ccc;
+        margin-bottom: 0.5rem;
+        break-inside: avoid;
+    }
+}
