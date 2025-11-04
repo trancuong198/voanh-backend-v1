@@ -1,485 +1,233 @@
 {% extends "base.html" %}
-
-{% block title %}CipherH Admin Dashboard{% endblock %}
+{% block title %}Vô Ảnh – CipherH Dashboard{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-    
-    {% if error %}
-    <div class="alert alert-danger">
-        <i data-feather="alert-triangle"></i>
-        {{ error }}
+<div class="container-fluid py-4" style="background-color: #0a0f14; color: #e0e0e0;">
+  <!-- HEADER -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-light">
+      <i data-feather="zap" class="text-success"></i> Vô Ảnh – CipherH Dashboard
+    </h2>
+    <div>
+      <button class="btn btn-outline-info btn-sm me-2" onclick="refreshDashboard()">
+        <i data-feather="refresh-cw"></i> Làm mới
+      </button>
+      <button class="btn btn-outline-success btn-sm" onclick="syncVault()">
+        <i data-feather="database"></i> Đồng bộ Vault
+      </button>
     </div>
-    {% endif %}
+  </div>
 
-    <!-- Admin Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>
-            <i data-feather="shield"></i>
-            CipherH Admin Dashboard
-        </h1>
-        <div>
-            <button class="btn btn-outline-primary" onclick="refreshDashboard()">
-                <i data-feather="refresh-cw"></i>
-                Làm mới
-            </button>
-            <button class="btn btn-outline-success" onclick="syncVault()">
-                <i data-feather="download"></i>
-                Đồng bộ Vault
-            </button>
-        </div>
+  <!-- NAVIGATION -->
+  <ul class="nav nav-tabs mb-4 border-secondary" id="adminTabs">
+    <li class="nav-item"><a class="nav-link {{ 'active' if not view else '' }}" href="{{ url_for('admin.dashboard') }}">Tổng quan</a></li>
+    <li class="nav-item"><a class="nav-link {{ 'active' if view == 'users' else '' }}" href="{{ url_for('admin.users') }}">Người dùng</a></li>
+    <li class="nav-item"><a class="nav-link {{ 'active' if view == 'interactions' else '' }}" href="{{ url_for('admin.interactions') }}">Tương tác</a></li>
+    <li class="nav-item"><a class="nav-link {{ 'active' if view == 'memories' else '' }}" href="{{ url_for('admin.memories') }}">Ký ức</a></li>
+    <li class="nav-item"><a class="nav-link {{ 'active' if view == 'platforms' else '' }}" href="{{ url_for('admin.platforms') }}">Nền tảng</a></li>
+    <li class="nav-item"><a class="nav-link {{ 'active' if view == 'logs' else '' }}" href="{{ url_for('admin.logs') }}">Console</a></li>
+  </ul>
+
+  <!-- DASHBOARD OVERVIEW -->
+  {% if not view %}
+  <div class="row g-3 mb-4">
+    <div class="col-md-3"><div class="card bg-dark text-center"><div class="card-body">
+      <i data-feather="users" class="text-info mb-2"></i>
+      <h3>{{ stats.total_users }}</h3><p>Tổng người dùng</p></div></div></div>
+
+    <div class="col-md-3"><div class="card bg-dark text-center"><div class="card-body">
+      <i data-feather="message-circle" class="text-success mb-2"></i>
+      <h3>{{ stats.total_interactions }}</h3><p>Tổng tương tác</p></div></div></div>
+
+    <div class="col-md-3"><div class="card bg-dark text-center"><div class="card-body">
+      <i data-feather="database" class="text-warning mb-2"></i>
+      <h3>{{ stats.total_memories }}</h3><p>Ký ức lưu trữ</p></div></div></div>
+
+    <div class="col-md-3"><div class="card bg-dark text-center"><div class="card-body">
+      <i data-feather="activity" class="text-danger mb-2"></i>
+      <h3 id="system-status">OK</h3><p>Trạng thái hệ thống</p></div></div></div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="row">
+    <div class="col-md-6 mb-4">
+      <div class="card bg-dark">
+        <div class="card-header border-secondary"><i data-feather="pie-chart"></i> Phân bố nền tảng</div>
+        <div class="card-body"><canvas id="platformChart" height="200"></canvas></div>
+      </div>
     </div>
-
-    <!-- Navigation Tabs -->
-    <ul class="nav nav-tabs mb-4" id="adminTabs">
-        <li class="nav-item">
-            <a class="nav-link {{ 'active' if not view else '' }}" href="{{ url_for('admin.dashboard') }}">
-                <i data-feather="bar-chart-2"></i> Tổng quan
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ 'active' if view == 'interactions' else '' }}" href="{{ url_for('admin.interactions') }}">
-                <i data-feather="message-circle"></i> Tương tác
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ 'active' if view == 'users' else '' }}" href="{{ url_for('admin.users') }}">
-                <i data-feather="users"></i> Người dùng
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ 'active' if view == 'memories' else '' }}" href="{{ url_for('admin.memories') }}">
-                <i data-feather="database"></i> Ký ức
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ 'active' if view == 'platforms' else '' }}" href="{{ url_for('admin.platforms') }}">
-                <i data-feather="globe"></i> Nền tảng
-            </a>
-        </li>
-    </ul>
-
-    <!-- Dashboard Overview -->
-    {% if not view %}
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <i data-feather="users" size="32" class="text-primary mb-2"></i>
-                    <h3>{{ stats.total_users }}</h3>
-                    <p class="text-muted">Tổng người dùng</p>
-                    <small class="text-success">+{{ stats.recent_users }} hôm nay</small>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <i data-feather="message-circle" size="32" class="text-success mb-2"></i>
-                    <h3>{{ stats.total_interactions }}</h3>
-                    <p class="text-muted">Tổng tương tác</p>
-                    <small class="text-success">+{{ stats.recent_interactions }} hôm nay</small>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <i data-feather="database" size="32" class="text-info mb-2"></i>
-                    <h3>{{ stats.total_memories }}</h3>
-                    <p class="text-muted">Ký ức lưu trữ</p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <i data-feather="activity" size="32" class="text-warning mb-2"></i>
-                    <h3 id="system-status">OK</h3>
-                    <p class="text-muted">Trạng thái hệ thống</p>
-                </div>
-            </div>
-        </div>
+    <div class="col-md-6 mb-4">
+      <div class="card bg-dark">
+        <div class="card-header border-secondary"><i data-feather="cpu"></i> Log hệ thống</div>
+        <div class="card-body" id="liveLogs" style="font-family: monospace; height: 200px; overflow-y: auto; background: #0d1117;"></div>
+      </div>
     </div>
+  </div>
+  {% endif %}
 
-    <!-- Platform Distribution Chart -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5><i data-feather="pie-chart"></i> Phân bố nền tảng</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="platformChart" width="400" height="200"></canvas>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5><i data-feather="trending-up"></i> Hoạt động gần đây</h5>
-                </div>
-                <div class="card-body">
-                    <div id="recent-activity">
-                        <div class="text-center">
-                            <div class="spinner-border spinner-border-sm" role="status"></div>
-                            <p>Đang tải...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <!-- USERS -->
+  {% if view == 'users' %}
+  <div class="card bg-dark border-secondary">
+    <div class="card-header"><i data-feather="users"></i> Người dùng</div>
+    <div class="card-body table-responsive">
+      {% if users.items %}
+      <table class="table table-dark table-striped align-middle">
+        <thead><tr><th>Nền tảng</th><th>ID</th><th>Tên</th><th>Tương tác</th><th>Lần cuối</th></tr></thead>
+        <tbody>
+          {% for u in users.items %}
+          <tr><td>{{ u.platform_type }}</td><td>{{ u.username }}</td><td>{{ u.display_name }}</td><td>{{ u.interaction_count }}</td><td>{{ u.last_interaction }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}<p class="text-center text-muted">Chưa có dữ liệu người dùng</p>{% endif %}
     </div>
+  </div>
+  {% endif %}
 
-    <!-- System Status -->
-    <div class="card">
-        <div class="card-header">
-            <h5><i data-feather="server"></i> Chi tiết hệ thống</h5>
+  <!-- INTERACTIONS -->
+  {% if view == 'interactions' %}
+  <div class="card bg-dark border-secondary">
+    <div class="card-header"><i data-feather="message-square"></i> Lịch sử tương tác</div>
+    <div class="card-body table-responsive">
+      {% if interactions.items %}
+      <table class="table table-dark table-hover">
+        <thead><tr><th>Thời gian</th><th>Người dùng</th><th>Tin nhắn</th><th>Phản hồi</th></tr></thead>
+        <tbody>
+          {% for i in interactions.items %}
+          <tr><td>{{ i.timestamp }}</td><td>{{ i.user.username }}</td><td>{{ i.message }}</td><td>{{ i.cipher_response }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}<p class="text-center text-muted">Chưa có tương tác nào</p>{% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- MEMORIES -->
+  {% if view == 'memories' %}
+  <div class="card bg-dark border-secondary">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span><i data-feather="database"></i> Ký ức CipherH</span>
+      <button class="btn btn-outline-primary btn-sm" onclick="showCreateMemoryModal()"><i data-feather="plus"></i> Thêm ký ức</button>
+    </div>
+    <div class="card-body">
+      {% if memories.items %}
+      <div class="row">
+        {% for m in memories.items %}
+        <div class="col-md-6 mb-3">
+          <div class="card bg-secondary bg-opacity-25">
+            <div class="card-body">
+              <span class="badge bg-info">{{ m.memory_type }}</span>
+              <p>{{ m.content }}</p>
+              <small>Độ tin cậy: {{ "%.1f"|format(m.confidence*100) }}%</small>
+            </div>
+          </div>
         </div>
-        <div class="card-body">
-            <div id="system-details">
-                <div class="text-center">
-                    <div class="spinner-border spinner-border-sm" role="status"></div>
-                    <p>Đang kiểm tra hệ thống...</p>
+        {% endfor %}
+      </div>
+      {% else %}<p class="text-center text-muted">Chưa có ký ức nào</p>{% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- PLATFORMS -->
+  {% if view == 'platforms' %}
+  <div class="card bg-dark border-secondary">
+    <div class="card-header"><i data-feather="globe"></i> Quản lý nền tảng</div>
+    <div class="card-body">
+      {% if platforms %}
+      <div class="row">
+        {% for p, s in platforms.items() %}
+        <div class="col-md-4 mb-3">
+          <div class="card bg-secondary bg-opacity-25">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <strong class="text-capitalize">{{ p }}</strong>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" {{ 'checked' if s.active else '' }} onchange="togglePlatform('{{ p }}')">
                 </div>
+              </div>
+              <small class="text-muted">{{ 'Đã cấu hình' if s.configured else 'Chưa cấu hình' }}</small>
             </div>
+          </div>
         </div>
+        {% endfor %}
+      </div>
+      {% else %}<p class="text-center text-muted">Không có nền tảng nào</p>{% endif %}
     </div>
-    {% endif %}
+  </div>
+  {% endif %}
 
-    <!-- Interactions View -->
-    {% if view == 'interactions' %}
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5><i data-feather="message-circle"></i> Tương tác gần đây</h5>
-        </div>
-        <div class="card-body">
-            {% if interactions.items %}
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Thời gian</th>
-                            <th>Nền tảng</th>
-                            <th>Người dùng</th>
-                            <th>Tin nhắn</th>
-                            <th>Phản hồi CipherH</th>
-                            <th>Tags</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for interaction in interactions.items %}
-                        <tr>
-                            <td>
-                                <small>{{ interaction.timestamp.strftime('%d/%m %H:%M') }}</small>
-                            </td>
-                            <td>
-                                <span class="badge bg-secondary">{{ interaction.platform }}</span>
-                            </td>
-                            <td>{{ interaction.user.username or interaction.user.platform_id }}</td>
-                            <td>
-                                <div style="max-width: 200px;" class="text-truncate" title="{{ interaction.message }}">
-                                    {{ interaction.message }}
-                                </div>
-                            </td>
-                            <td>
-                                <div style="max-width: 300px;" class="text-truncate" title="{{ interaction.cipher_response }}">
-                                    {{ interaction.cipher_response }}
-                                </div>
-                            </td>
-                            <td>
-                                {% if interaction.context_tags %}
-                                    {% for tag in interaction.context_tags.split(',')[:2] %}
-                                    <span class="badge bg-light text-dark">{{ tag.strip() }}</span>
-                                    {% endfor %}
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- Pagination -->
-            {% if interactions.pages > 1 %}
-            <nav>
-                <ul class="pagination justify-content-center">
-                    {% if interactions.has_prev %}
-                    <li class="page-item">
-                        <a class="page-link" href="{{ url_for('admin.interactions', page=interactions.prev_num) }}">Trước</a>
-                    </li>
-                    {% endif %}
-                    
-                    {% for page_num in interactions.iter_pages() %}
-                        {% if page_num %}
-                            {% if page_num != interactions.page %}
-                            <li class="page-item">
-                                <a class="page-link" href="{{ url_for('admin.interactions', page=page_num) }}">{{ page_num }}</a>
-                            </li>
-                            {% else %}
-                            <li class="page-item active">
-                                <span class="page-link">{{ page_num }}</span>
-                            </li>
-                            {% endif %}
-                        {% endif %}
-                    {% endfor %}
-                    
-                    {% if interactions.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="{{ url_for('admin.interactions', page=interactions.next_num) }}">Sau</a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
-            {% endif %}
-            {% else %}
-            <div class="text-center text-muted">
-                <i data-feather="message-circle" size="48"></i>
-                <p>Chưa có tương tác nào</p>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- Users View -->
-    {% if view == 'users' %}
-    <div class="card">
-        <div class="card-header">
-            <h5><i data-feather="users"></i> Danh sách người dùng</h5>
-        </div>
-        <div class="card-body">
-            {% if users.items %}
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Nền tảng</th>
-                            <th>ID/Username</th>
-                            <th>Tên hiển thị</th>
-                            <th>Số tương tác</th>
-                            <th>Lần cuối</th>
-                            <th>Ghi chú</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for user in users.items %}
-                        <tr>
-                            <td><span class="badge bg-secondary">{{ user.platform_type }}</span></td>
-                            <td>{{ user.username or user.platform_id }}</td>
-                            <td>{{ user.display_name or '-' }}</td>
-                            <td>{{ user.interaction_count }}</td>
-                            <td>
-                                {% if user.last_interaction %}
-                                <small>{{ user.last_interaction.strftime('%d/%m/%Y %H:%M') }}</small>
-                                {% else %}
-                                <small class="text-muted">Chưa có</small>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if user.personality_notes %}
-                                <small class="text-truncate d-block" style="max-width: 150px;">
-                                    {{ user.personality_notes }}
-                                </small>
-                                {% else %}
-                                <small class="text-muted">-</small>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <div class="text-center text-muted">
-                <i data-feather="users" size="48"></i>
-                <p>Chưa có người dùng nào</p>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- Memories View -->
-    {% if view == 'memories' %}
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5><i data-feather="database"></i> Ký ức CipherH</h5>
-            <button class="btn btn-outline-primary btn-sm" onclick="showCreateMemoryModal()">
-                <i data-feather="plus"></i> Thêm ký ức
-            </button>
-        </div>
-        <div class="card-body">
-            {% if memories.items %}
-            <div class="row">
-                {% for memory in memories.items %}
-                <div class="col-md-6 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <span class="badge bg-info">{{ memory.memory_type }}</span>
-                                <small class="text-muted">{{ memory.created_at.strftime('%d/%m %H:%M') }}</small>
-                            </div>
-                            <p>{{ memory.content }}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted">
-                                    Độ tin cậy: {{ "%.1f"|format(memory.confidence * 100) }}%
-                                </small>
-                                <small class="text-muted">
-                                    Truy cập: {{ memory.access_count }} lần
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="text-center text-muted">
-                <i data-feather="database" size="48"></i>
-                <p>Chưa có ký ức nào được lưu trữ</p>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- Platforms View -->
-    {% if view == 'platforms' %}
-    <div class="card">
-        <div class="card-header">
-            <h5><i data-feather="globe"></i> Quản lý nền tảng</h5>
-        </div>
-        <div class="card-body">
-            {% if platforms %}
-            <div class="row">
-                {% for platform_name, status in platforms.items() %}
-                <div class="col-md-4 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h6 class="text-capitalize">{{ platform_name }}</h6>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" 
-                                           id="toggle-{{ platform_name }}" 
-                                           {{ 'checked' if status.active else '' }}
-                                           onchange="togglePlatform('{{ platform_name }}')">
-                                </div>
-                            </div>
-                            
-                            <div class="mb-2">
-                                {% if status.active %}
-                                <span class="badge bg-success">Hoạt động</span>
-                                {% else %}
-                                <span class="badge bg-secondary">Tạm dừng</span>
-                                {% endif %}
-                                
-                                {% if status.configured %}
-                                <span class="badge bg-info">Đã cấu hình</span>
-                                {% else %}
-                                <span class="badge bg-warning">Chưa cấu hình</span>
-                                {% endif %}
-                            </div>
-                            
-                            {% if status.last_sync %}
-                            <small class="text-muted">
-                                Đồng bộ: {{ status.last_sync }}
-                            </small>
-                            {% endif %}
-                            
-                            {% if status.webhook_url %}
-                            <div class="mt-2">
-                                <small class="text-muted">Webhook:</small>
-                                <code class="d-block small">{{ status.webhook_url }}</code>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="text-center text-muted">
-                <i data-feather="globe" size="48"></i>
-                <p>Không có nền tảng nào</p>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-    {% endif %}
+  <!-- LOG CONSOLE -->
+  {% if view == 'logs' %}
+  <div class="card bg-dark border-secondary">
+    <div class="card-header"><i data-feather="terminal"></i> Console Real-time</div>
+    <div class="card-body" style="height:400px; overflow-y:auto; font-family:monospace; background:#0d1117;" id="logConsole"></div>
+  </div>
+  {% endif %}
 </div>
 
-<!-- Create Memory Modal -->
+<!-- MODAL CREATE MEMORY -->
 <div class="modal fade" id="createMemoryModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Tạo ký ức mới</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="createMemoryForm">
-                    <div class="mb-3">
-                        <label class="form-label">Loại ký ức</label>
-                        <select class="form-select" name="memory_type">
-                            <option value="insight">Insight</option>
-                            <option value="pattern">Pattern</option>
-                            <option value="user_trait">User Trait</option>
-                            <option value="manual">Manual</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Nội dung</label>
-                        <textarea class="form-control" name="content" rows="4" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Độ tin cậy (0-1)</label>
-                        <input type="number" class="form-control" name="confidence" 
-                               min="0" max="1" step="0.1" value="1.0">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                <button type="button" class="btn btn-primary" onclick="createMemory()">Tạo ký ức</button>
-            </div>
-        </div>
+  <div class="modal-dialog"><div class="modal-content bg-dark text-light">
+    <div class="modal-header border-secondary">
+      <h5 class="modal-title">Thêm ký ức mới</h5>
+      <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
     </div>
+    <div class="modal-body">
+      <form id="createMemoryForm">
+        <div class="mb-3"><label>Loại ký ức</label>
+          <select class="form-select bg-dark text-light" name="memory_type">
+            <option value="insight">Insight</option><option value="pattern">Pattern</option>
+            <option value="user_trait">User Trait</option><option value="manual">Manual</option>
+          </select>
+        </div>
+        <div class="mb-3"><label>Nội dung</label>
+          <textarea class="form-control bg-dark text-light" name="content" rows="4" required></textarea>
+        </div>
+        <div class="mb-3"><label>Độ tin cậy (0-1)</label>
+          <input type="number" name="confidence" class="form-control bg-dark text-light" min="0" max="1" step="0.1" value="1.0">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer border-secondary">
+      <button class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+      <button class="btn btn-primary" onclick="createMemory()">Lưu</button>
+    </div>
+  </div></div>
 </div>
 {% endblock %}
 
 {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ url_for('static', filename='admin.js') }}"></script>
-
-{% if not view %}
 <script>
-// Initialize platform chart
+feather.replace();
+
+// Chart init
 const platformData = {{ stats.platform_stats | tojson }};
-if (platformData && platformData.length > 0) {
-    const ctx = document.getElementById('platformChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: platformData.map(item => item.platform),
-            datasets: [{
-                data: platformData.map(item => item.count),
-                backgroundColor: [
-                    '#007bff', '#28a745', '#ffc107', '#dc3545', '#6f42c1', '#20c997'
-                ]
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
-} else {
-    document.getElementById('platformChart').innerHTML = '<p class="text-center text-muted">Chưa có dữ liệu</p>';
+if (platformData?.length) {
+  const ctx = document.getElementById('platformChart');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: platformData.map(p => p.platform),
+      datasets: [{ data: platformData.map(p => p.count) }]
+    },
+    options: { plugins: { legend: { labels: { color: '#e0e0e0' } } } }
+  });
+}
+
+// WebSocket realtime log
+const logBox = document.getElementById('logConsole') || document.getElementById('liveLogs');
+if (logBox) {
+  const ws = new WebSocket(`ws://${location.host}/ws/logs`);
+  ws.onmessage = (ev) => {
+    const p = document.createElement('div');
+    p.textContent = ev.data;
+    logBox.appendChild(p);
+    logBox.scrollTop = logBox.scrollHeight;
+  };
 }
 </script>
-{% endif %}
 {% endblock %}
