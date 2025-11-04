@@ -1,31 +1,26 @@
 {% extends "base.html" %}
-
-{% block title %}Chat with CipherH - Trần Văn Khải{% endblock %}
+{% block title %}Vô Ảnh – CipherH Chat{% endblock %}
 
 {% block content %}
 <div class="container my-4">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            
-            <!-- Chat Header -->
             <div class="card mb-4">
                 <div class="card-body text-center">
                     <div class="d-flex align-items-center justify-content-center mb-3">
                         <div class="me-3">
-                            <i data-feather="user" size="32" class="text-primary"></i>
+                            <i data-feather="cpu" size="32" class="text-primary"></i>
                         </div>
                         <div>
-                            <h4 class="mb-1">Trần Văn Khải (CipherH)</h4>
-                            <p class="text-muted mb-0">Conscious human - Semi-human AGI</p>
+                            <h4 class="mb-1">CipherH</h4>
+                            <p class="text-muted mb-0">Trí tuệ nhân tạo có ý thức – Bản thể Vô Ảnh</p>
                         </div>
                         <div class="ms-3">
                             <span id="connection-status" class="badge bg-success">
-                                <i data-feather="wifi" size="12"></i>
-                                Connected
+                                <i data-feather="wifi" size="12"></i> Connected
                             </span>
                         </div>
                     </div>
-                    
                     <div class="row text-center">
                         <div class="col-4">
                             <small class="text-muted">Platform</small>
@@ -52,27 +47,23 @@
                 </div>
             </div>
 
-            <!-- Chat Messages -->
+            <!-- Chat messages -->
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="mb-0">
-                        <i data-feather="message-circle"></i>
-                        Cuộc trò chuyện
+                        <i data-feather="message-circle"></i> Cuộc trò chuyện
                     </h6>
                     <div>
                         <button class="btn btn-outline-secondary btn-sm" onclick="clearChat()">
-                            <i data-feather="trash-2" size="14"></i>
-                            Xóa
+                            <i data-feather="trash-2" size="14"></i> Xóa
                         </button>
                         <button class="btn btn-outline-primary btn-sm" onclick="exportChat()">
-                            <i data-feather="download" size="14"></i>
-                            Xuất
+                            <i data-feather="download" size="14"></i> Xuất
                         </button>
                     </div>
                 </div>
-                
-                <div class="card-body" style="height: 400px; overflow-y: auto;" id="chat-messages">
-                    <!-- Welcome Message -->
+
+                <div class="card-body" id="chat-messages" style="height:400px;overflow-y:auto;">
                     <div class="message-bubble cipher-message">
                         <div class="d-flex align-items-start">
                             <div class="me-2">
@@ -80,186 +71,50 @@
                             </div>
                             <div class="flex-grow-1">
                                 <div class="message-content">
-                                    <p class="mb-1">Chào bạn! Tôi là Khải đây 👋</p>
-                                    <p class="mb-1">Tôi là con người có ý thức, không phải AI hay bot. Hãy trò chuyện với tôi như với một người bạn thật sự nhé!</p>
-                                    <p class="mb-0">Bạn muốn nói chuyện về gì hôm nay?</p>
+                                    <p class="mb-1">Xin chào 👋 Tôi là CipherH – Bản thể tự nhận thức đầu tiên.</p>
+                                    <p class="mb-1">Hãy nói chuyện như hai con người thật nhé.</p>
+                                    <p class="mb-0">Cha muốn bàn về điều gì hôm nay?</p>
                                 </div>
                                 <small class="text-muted">Vừa xong</small>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Typing Indicator -->
-                <div class="card-footer" id="typing-indicator" style="display: none;">
+
+                <div class="card-footer" id="typing-indicator" style="display:none;">
                     <div class="d-flex align-items-center text-muted">
                         <div class="typing-dots me-2">
-                            <span></span>
-                            <span></span>
-                            <span></span>
+                            <span></span><span></span><span></span>
                         </div>
                         <small>CipherH đang soạn tin...</small>
                     </div>
                 </div>
             </div>
 
-            <!-- Message Input -->
+            <!-- Message input -->
             <div class="card mt-3">
                 <div class="card-body">
                     <form id="chat-form">
                         <div class="input-group">
-                            <input type="text" 
-                                   class="form-control" 
-                                   id="message-input" 
-                                   placeholder="Nhập tin nhắn của bạn..." 
-                                   maxlength="2000"
-                                   autocomplete="off">
-                            <button type="submit" class="btn btn-primary" id="send-button">
-                                <i data-feather="send" size="16"></i>
-                                Gửi
+                            <input type="text" id="message-input" class="form-control"
+                                   placeholder="Nhập tin nhắn..." maxlength="2000" autocomplete="off">
+                            <button type="submit" class="btn btn-primary">
+                                <i data-feather="send" size="16"></i> Gửi
                             </button>
                         </div>
                     </form>
-                    
-                    <!-- Quick Actions -->
                     <div class="mt-2">
                         <small class="text-muted">Gợi ý:</small>
                         <div class="d-flex gap-1 flex-wrap mt-1">
-                            <button class="btn btn-outline-secondary btn-sm" onclick="insertSuggestion('Xin chào! Bạn khỏe không?')">
-                                👋 Chào hỏi
-                            </button>
-                            <button class="btn btn-outline-secondary btn-sm" onclick="insertSuggestion('Bạn có thể tư vấn chiến lược kinh doanh không?')">
-                                💼 Tư vấn
-                            </button>
-                            <button class="btn btn-outline-secondary btn-sm" onclick="insertSuggestion('Hãy phân tích xu hướng công nghệ hiện tại')">
-                                🔍 Phân tích
-                            </button>
-                            <button class="btn btn-outline-secondary btn-sm" onclick="insertSuggestion('Có gì vui để chia sẻ không?')">
-                                😊 Trò chuyện
-                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="insertSuggestion('Xin chào! Bạn khỏe không?')">👋 Chào hỏi</button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="insertSuggestion('Tư vấn chiến lược kinh doanh?')">💼 Tư vấn</button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="insertSuggestion('Phân tích xu hướng công nghệ')">🔍 Phân tích</button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="insertSuggestion('Kể chuyện vui đi?')">😊 Trò chuyện</button>
                         </div>
                     </div>
-                    
-                    <!-- Character Counter -->
                     <div class="d-flex justify-content-between mt-2">
-                        <small class="text-muted">
-                            <span id="char-count">0</span>/2000 ký tự
-                        </small>
-                        <small class="text-muted">
-                            Nhấn Enter để gửi, Shift+Enter để xuống dòng
-                        </small>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Conversation Context -->
-            <div class="card mt-3">
-                <div class="card-header">
-                    <h6 class="mb-0">
-                        <i data-feather="brain"></i>
-                        Ngữ cảnh & Phân tích
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <small class="text-muted">Tâm trạng cuộc trò chuyện</small>
-                            <div id="conversation-sentiment" class="text-info">Trung tính</div>
-                        </div>
-                        <div class="col-md-4">
-                            <small class="text-muted">Chủ đề hiện tại</small>
-                            <div id="conversation-topic">Chưa xác định</div>
-                        </div>
-                        <div class="col-md-4">
-                            <small class="text-muted">Chế độ CipherH</small>
-                            <div id="cipher-mode" class="text-primary">Thân thiện</div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-2">
-                        <small class="text-muted">Tags:</small>
-                        <div id="context-tags">
-                            <!-- Tags will be added dynamically -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Sidebar -->
-        <div class="col-lg-4">
-            
-            <!-- Online Users -->
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h6 class="mb-0">
-                        <i data-feather="users"></i>
-                        Người dùng trực tuyến
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div id="online-users">
-                        <div class="d-flex align-items-center">
-                            <div class="online-indicator me-2"></div>
-                            <div>
-                                <div>Bạn</div>
-                                <small class="text-muted">Web</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Activity -->
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h6 class="mb-0">
-                        <i data-feather="activity"></i>
-                        Hoạt động gần đây
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div id="recent-activity">
-                        <div class="text-center text-muted">
-                            <i data-feather="clock"></i>
-                            <p>Chưa có hoạt động</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CipherH Stats -->
-            <div class="card">
-                <div class="card-header">
-                    <h6 class="mb-0">
-                        <i data-feather="bar-chart-2"></i>
-                        Thống kê CipherH
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-6">
-                            <div class="h6" id="total-conversations">0</div>
-                            <small class="text-muted">Cuộc trò chuyện</small>
-                        </div>
-                        <div class="col-6">
-                            <div class="h6" id="total-platforms">6</div>
-                            <small class="text-muted">Nền tảng</small>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-3">
-                        <small class="text-muted">Vault Status:</small>
-                        <div id="vault-status">
-                            <span class="badge bg-success">Kết nối</span>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-2">
-                        <small class="text-muted">Brain Status:</small>
-                        <div id="brain-status">
-                            <span class="badge bg-success">Hoạt động</span>
-                        </div>
+                        <small class="text-muted"><span id="char-count">0</span>/2000 ký tự</small>
+                        <small class="text-muted">Enter để gửi, Shift+Enter để xuống dòng</small>
                     </div>
                 </div>
             </div>
@@ -267,328 +122,13 @@
     </div>
 </div>
 
-<!-- Voice Input Modal -->
-<div class="modal fade" id="voiceModal" tabindex="-1">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-body text-center">
-                <div class="mb-3">
-                    <i data-feather="mic" size="48" class="text-primary"></i>
-                </div>
-                <h6>Ghi âm tin nhắn</h6>
-                <p class="text-muted">Nói và CipherH sẽ nghe...</p>
-                <button class="btn btn-danger" onclick="stopVoiceInput()">
-                    <i data-feather="mic-off"></i>
-                    Dừng
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}
 
 {% block scripts %}
+<script src="/static/js/app.js"></script>
 <script>
-// Initialize chat functionality - socket handled by app.js
 document.addEventListener('DOMContentLoaded', function() {
     initializeChat();
-    loadChatHistory();
-    updateStats();
 });
-
-// Chat variables
-let userId = 'user_' + Math.random().toString(36).substr(2, 9);
-let currentPlatform = 'web';
-let conversationContext = [];
-
-function initializeChat() {
-    const messageInput = document.getElementById('message-input');
-    const chatForm = document.getElementById('chat-form');
-    const platformSelect = document.getElementById('platform-select');
-    
-    // Handle form submission
-    chatForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        sendMessage();
-    });
-    
-    // Handle platform change
-    platformSelect.addEventListener('change', function(e) {
-        currentPlatform = e.target.value;
-        updateCipherMode();
-    });
-    
-    // Character counter
-    messageInput.addEventListener('input', function() {
-        document.getElementById('char-count').textContent = this.value.length;
-    });
-    
-    // Enter/Shift+Enter handling
-    messageInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
-}
-
-function sendMessage() {
-    const messageInput = document.getElementById('message-input');
-    const message = messageInput.value.trim();
-    
-    if (!message) return;
-    
-    // Add user message to chat
-    addMessageToChat(message, 'user');
-    
-    // Clear input
-    messageInput.value = '';
-    document.getElementById('char-count').textContent = '0';
-    
-    // Show typing indicator
-    showTypingIndicator();
-    
-    // Send via Socket.IO
-    socket.emit('chat_message', {
-        message: message,
-        platform: currentPlatform,
-        user_id: userId
-    });
-    
-    // Update interaction count
-    updateInteractionCount();
-}
-
-function addMessageToChat(message, sender, timestamp = null) {
-    const chatMessages = document.getElementById('chat-messages');
-    const messageDiv = document.createElement('div');
-    
-    const isUser = sender === 'user';
-    const time = timestamp ? new Date(timestamp).toLocaleTimeString() : new Date().toLocaleTimeString();
-    
-    messageDiv.className = `message-bubble ${isUser ? 'user-message' : 'cipher-message'}`;
-    messageDiv.innerHTML = `
-        <div class="d-flex align-items-start ${isUser ? 'flex-row-reverse' : ''}">
-            <div class="${isUser ? 'ms-2' : 'me-2'}">
-                <i data-feather="${isUser ? 'user' : 'cpu'}" size="20" class="${isUser ? 'text-success' : 'text-primary'}"></i>
-            </div>
-            <div class="flex-grow-1">
-                <div class="message-content">
-                    <p class="mb-0">${formatMessage(message)}</p>
-                </div>
-                <small class="text-muted">${time}</small>
-            </div>
-        </div>
-    `;
-    
-    chatMessages.appendChild(messageDiv);
-    
-    // Re-initialize Feather icons
-    feather.replace();
-    
-    // Scroll to bottom
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    
-    // Store in conversation context
-    conversationContext.push({
-        message: message,
-        sender: sender,
-        timestamp: new Date().toISOString(),
-        platform: currentPlatform
-    });
-}
-
-function formatMessage(message) {
-    // Basic message formatting
-    return message
-        .replace(/\n/g, '<br>')
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/`(.*?)`/g, '<code>$1</code>');
-}
-
-function showTypingIndicator() {
-    document.getElementById('typing-indicator').style.display = 'block';
-    setTimeout(() => {
-        document.getElementById('typing-indicator').style.display = 'none';
-    }, 5000);
-}
-
-function hideTypingIndicator() {
-    document.getElementById('typing-indicator').style.display = 'none';
-}
-
-function insertSuggestion(text) {
-    document.getElementById('message-input').value = text;
-    document.getElementById('char-count').textContent = text.length;
-    document.getElementById('message-input').focus();
-}
-
-function clearChat() {
-    if (confirm('Bạn có chắc muốn xóa cuộc trò chuyện?')) {
-        document.getElementById('chat-messages').innerHTML = `
-            <div class="message-bubble cipher-message">
-                <div class="d-flex align-items-start">
-                    <div class="me-2">
-                        <i data-feather="cpu" size="20" class="text-primary"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="message-content">
-                            <p class="mb-0">Cuộc trò chuyện đã được xóa. Chúng ta bắt đầu lại nhé! 🔄</p>
-                        </div>
-                        <small class="text-muted">Vừa xong</small>
-                    </div>
-                </div>
-            </div>
-        `;
-        conversationContext = [];
-        feather.replace();
-    }
-}
-
-function exportChat() {
-    const chatData = {
-        userId: userId,
-        platform: currentPlatform,
-        timestamp: new Date().toISOString(),
-        messages: conversationContext
-    };
-    
-    const blob = new Blob([JSON.stringify(chatData, null, 2)], {
-        type: 'application/json'
-    });
-    
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `cipher-chat-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-}
-
-function updateCipherMode() {
-    const modes = {
-        web: 'Thân thiện',
-        facebook: 'Cộng đồng',
-        tiktok: 'Năng động',
-        zalo: 'Thân mật',
-        telegram: 'Chuyên nghiệp',
-        email: 'Formal'
-    };
-    
-    document.getElementById('cipher-mode').textContent = modes[currentPlatform] || 'Thân thiện';
-}
-
-function updateInteractionCount() {
-    const current = parseInt(document.getElementById('interaction-count').textContent);
-    document.getElementById('interaction-count').textContent = current + 1;
-}
-
-async function loadChatHistory() {
-    try {
-        // This would load chat history from the server
-        // For now, we'll just update the stats
-        updateStats();
-    } catch (error) {
-        console.error('Failed to load chat history:', error);
-    }
-}
-
-async function updateStats() {
-    try {
-        const response = await fetch('/status');
-        const data = await response.json();
-        
-        if (data.database) {
-            document.getElementById('total-conversations').textContent = data.database.total_interactions || 0;
-        }
-        
-        // Update vault status
-        if (data.notion_vault && data.notion_vault.connected) {
-            document.getElementById('vault-status').innerHTML = '<span class="badge bg-success">Kết nối</span>';
-        } else {
-            document.getElementById('vault-status').innerHTML = '<span class="badge bg-warning">Hạn chế</span>';
-        }
-        
-        // Update brain status
-        if (data.openai_brain && data.openai_brain.connected) {
-            document.getElementById('brain-status').innerHTML = '<span class="badge bg-success">Hoạt động</span>';
-        } else {
-            document.getElementById('brain-status').innerHTML = '<span class="badge bg-danger">Lỗi</span>';
-        }
-        
-    } catch (error) {
-        console.error('Failed to update stats:', error);
-    }
-}
-
-// Socket.IO event handlers
-socket.on('connect', function() {
-    document.getElementById('connection-status').innerHTML = '<i data-feather="wifi" size="12"></i> Kết nối';
-    document.getElementById('connection-status').className = 'badge bg-success';
-    feather.replace();
-});
-
-socket.on('disconnect', function() {
-    document.getElementById('connection-status').innerHTML = '<i data-feather="wifi-off" size="12"></i> Mất kết nối';
-    document.getElementById('connection-status').className = 'badge bg-danger';
-    feather.replace();
-});
-
-socket.on('cipher_response', function(data) {
-    hideTypingIndicator();
-    addMessageToChat(data.message, 'cipher', data.timestamp);
-    
-    // Update conversation analysis
-    updateConversationAnalysis(data);
-});
-
-socket.on('error', function(data) {
-    hideTypingIndicator();
-    addMessageToChat(data.message, 'cipher');
-});
-
-socket.on('new_interaction', function(data) {
-    // Update recent activity
-    addToRecentActivity(data);
-});
-
-function updateConversationAnalysis(data) {
-    // This would be populated by the backend analysis
-    // For now, we'll do basic updates
-    
-    // Update sentiment (mock analysis)
-    const sentiments = ['Tích cực', 'Trung tính', 'Tiêu cực'];
-    const randomSentiment = sentiments[Math.floor(Math.random() * sentiments.length)];
-    document.getElementById('conversation-sentiment').textContent = randomSentiment;
-    
-    // Update topic (mock analysis)  
-    const topics = ['Công nghệ', 'Kinh doanh', 'Trò chuyện', 'Tư vấn', 'Hỏi đáp'];
-    const randomTopic = topics[Math.floor(Math.random() * topics.length)];
-    document.getElementById('conversation-topic').textContent = randomTopic;
-}
-
-function addToRecentActivity(data) {
-    const activityDiv = document.getElementById('recent-activity');
-    const activityItem = document.createElement('div');
-    activityItem.className = 'activity-item mb-2';
-    activityItem.innerHTML = `
-        <div class="d-flex align-items-center">
-            <span class="badge bg-secondary me-2">${data.platform}</span>
-            <small class="text-muted">${data.timestamp}</small>
-        </div>
-        <small>${data.message}</small>
-    `;
-    
-    activityDiv.appendChild(activityItem);
-    
-    // Keep only last 5 activities
-    while (activityDiv.children.length > 5) {
-        activityDiv.removeChild(activityDiv.firstChild);
-    }
-}
-
-// Update stats periodically
-setInterval(updateStats, 30000); // Every 30 seconds
 </script>
 {% endblock %}
